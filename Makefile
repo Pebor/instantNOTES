@@ -1,10 +1,10 @@
 all: install
 
 install:
-	cp instantnotes.sh /bin/instantnotes
+	cp instantnotes.sh /usr/bin/instantnotes
 
 uninstall:
-	rm /bin/instantnotes
+	rm /usr/bin/instantnotes
 
 clean:
 	rm -r /home/${USER}/instantos/notes
