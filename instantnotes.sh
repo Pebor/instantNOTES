@@ -12,19 +12,21 @@ maketodo() {
             task=$TEMP$task
             task=":g [ ] $(sed "s/\.do//" <<< $task)"
             DO=$DO$task'\n'
-            if [ "$TASK" != "" ]; then TEMP=""; fi
+            TEMP=""
 
         elif grep -q "\.done$" <<< $task; then
             task=$TEMP$task
             task=":r [x] $(sed "s/\.done//" <<< $task)"
             DONE=$DONE$task'\n'
-            if [ "$TASK" != "" ]; then TEMP=""; fi
+            TEMP=""
 
         else
             TEMP=$TEMP$task' '
         fi
 
     done
+
+    TEMP=""
 
     OUT=$1$DO$DONE
     OUT=${OUT::-2}
@@ -49,13 +51,34 @@ while [ "$TASK" != ":r Ok" ]; do
 
     if [ "$TASK" == ":g Options" ]; then
 
-        TASK="$( echo -e ":y Open\n:g Add\n:r Remove\n:g Clear Done\n:r Back" \
+        TASK="$( echo -e ":g Add\n:r Remove\n:b Open\n:y Rename\n:g Clear Done\n:r Back" \
         | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
 
         case "$TASK" in
-            ":y Open")
+            ":g Add")
 
-                TASK="$( maketodo "" \
+                NAME="$(imenu -i 'Note')"
+                touch "$NAME.do"
+                ;;
+
+            ":r Remove")
+
+                TASK="$( maketodo ":r Back\n" \
+                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+
+                if grep -q ":g \[ \] ." <<< $TASK; then
+                    TASK="$(sed "s/:g \[ \] //" <<< $TASK)"
+                    rm "$TASK.do"
+
+                elif grep -q ":r \[x\] ." <<< $TASK; then
+                    TASK="$(sed "s/:r \[x\] //" <<< $TASK)"
+                    rm "$TASK.done"
+                fi
+                ;;
+
+            ":b Open")
+
+                TASK="$( maketodo ":r Back\n" \
                 | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
 
                 if grep -q ":g \[ \] ." <<< $TASK; then
@@ -68,24 +91,20 @@ while [ "$TASK" != ":r Ok" ]; do
                 fi
                 ;;
 
-            ":g Add")
+            ":y Rename")
 
-                NAME="$(imenu -i 'Note')"
-                touch "$NAME.do"
-                ;;
-
-            ":r Remove")
-
-                TASK="$( maketodo "" \
+                TASK="$( maketodo ":r Back\n" \
                 | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
 
                 if grep -q ":g \[ \] ." <<< $TASK; then
                     TASK="$(sed "s/:g \[ \] //" <<< $TASK)"
-                    rm "$TASK.do"
+                    NAME="$(imenu -i "$TASK")"
+                    mv "$TASK.do" "$NAME.do"
 
                 elif grep -q ":r \[x\] ." <<< $TASK; then
                     TASK="$(sed "s/:r \[x\] //" <<< $TASK)"
-                    rm "$TASK.done"
+                    NAME="$(imenu -i "$TASK")"
+                    mv "$TASK.done" "$NAME.done"
                 fi
                 ;;
 
