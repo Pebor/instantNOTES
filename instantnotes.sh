@@ -1,114 +1,130 @@
 #!/bin/bash
 
+# TODO take notes from configurable path
 if ! [ -d ~/instantos/notes ]; then
     mkdir ~/instantos/notes
 fi
 cd ~/instantos/notes
 
 maketodo() {
-    for task in $(ls -N); do
+    for TASK in $(ls -N); do
 
-        if grep -q "\.do$" <<< $task; then
-            task=$TEMP$task
-            task=":g [ ] $(sed "s/\.do//" <<< $task)"
-            DO=$DO$task'\n'
+        if [ "${TASK: -5}" == ".note" ]; then
+            TASK=":g [ ] $TEMP${TASK:: -5}"
+            DO=$DO$TASK'\n'
             TEMP=""
 
-        elif grep -q "\.done$" <<< $task; then
-            task=$TEMP$task
-            task=":r [x] $(sed "s/\.done//" <<< $task)"
-            DONE=$DONE$task'\n'
+        elif [ "${TASK: -5}" == ".done" ]; then
+            TASK=":r [X] $TEMP${TASK:: -5}"
+            DONE=$DONE$TASK'\n'
             TEMP=""
 
         else
-            TEMP=$TEMP$task' '
+            TEMP=$TEMP$TASK' '
         fi
 
     done
 
-    TEMP=""
-
     OUT=$1$DO$DONE
-    OUT=${OUT::-2}
-    echo -e $OUT
+    echo -e "${OUT::-2}"
 }
 
-while [ "$TASK" != ":r Ok" ]; do
+cleanselected() {
+    TEMP=$1
+
+    if [ "${TEMP::7}" == ":g [ ] " ]; then
+        TEMP="${TEMP:7}"
+        echo -e "$TEMP.note"
+
+    elif [ "${TEMP::7}" == ":r [X] " ]; then
+        TEMP="${TEMP:7}"
+        echo -e "$TEMP.done"
+
+    else
+        echo -e "${TEMP:4}"
+    fi
+}
+
+reversesuffix() {
+    if [ "$1" == ".note" ]; then
+        echo -e ".done"
+    elif [ "$1" == ".done" ]; then
+        echo -e ".note"
+    fi
+}
+
+
+while [ "$TASK" != "Ok" ]; do
 
     TASK="$( maketodo ":g Options\n:r Ok\n" \
     | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
 
-    if grep -q ":g \[ \] ." <<< $TASK; then
-        TASK="$(sed "s/:g \[ \] //" <<< $TASK)"
-        cp "$TASK.do" "$TASK.done"
-        rm "$TASK.do"
+    TASK="$( cleanselected "$TASK" )"
+    SUFFIX="${TASK: -5}"
 
-    elif grep -q ":r \[x\] ." <<< $TASK; then
-        TASK="$(sed "s/:r \[x\] //" <<< $TASK)"
-        cp "$TASK.done" "$TASK.do"
-        rm "$TASK.done"
+    if [ "${TASK: -5:1}" == "." ]; then
+        TASK="${TASK:: -5}"
+        cp "$TASK$SUFFIX" "$TASK$(reversesuffix $SUFFIX)"
+        rm "$TASK$SUFFIX"
     fi
 
-    if [ "$TASK" == ":g Options" ]; then
+    if [ "$TASK" == "Options" ]; then
 
         TASK="$( echo -e ":g Add\n:r Remove\n:b Open\n:y Rename\n:g Clear Done\n:r Back" \
         | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
 
+        TASK="$( cleanselected "$TASK" )"
+
         case "$TASK" in
-            ":g Add")
+            "Add")
 
                 NAME="$(imenu -i 'Note')"
-                touch "$NAME.do"
+                touch "$NAME.note"
                 ;;
 
-            ":r Remove")
+            "Remove")
 
                 TASK="$( maketodo ":r Back\n" \
                 | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
 
-                if grep -q ":g \[ \] ." <<< $TASK; then
-                    TASK="$(sed "s/:g \[ \] //" <<< $TASK)"
-                    rm "$TASK.do"
-
-                elif grep -q ":r \[x\] ." <<< $TASK; then
-                    TASK="$(sed "s/:r \[x\] //" <<< $TASK)"
-                    rm "$TASK.done"
+                TASK="$( cleanselected "$TASK" )"
+                
+                if [ "${TASK: -5:1}" == "." ]; then
+                    rm "$TASK"
                 fi
                 ;;
 
-            ":b Open")
+            "Open")
 
                 TASK="$( maketodo ":r Back\n" \
                 | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+                
+                TASK="$( cleanselected "$TASK" )"
 
-                if grep -q ":g \[ \] ." <<< $TASK; then
-                    TASK="$(sed "s/:g \[ \] //" <<< $TASK)"
-                    exec ~/.config/instantos/default/editor $(pwd)/"$TASK.do"
-
-                elif grep -q ":r \[x\] ." <<< $TASK; then
-                    TASK="$(sed "s/:r \[x\] //" <<< $TASK)"
-                    exec ~/.config/instantos/default/editor $(pwd)/"$TASK.done"
+                #TODO take editor from configurable path
+                if [ "${TASK: -5:1}" == "." ]; then
+                    exec ~/.config/instantos/default/editor $(pwd)/"$TASK"
                 fi
                 ;;
 
-            ":y Rename")
+            "Rename")
 
                 TASK="$( maketodo ":r Back\n" \
                 | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
 
-                if grep -q ":g \[ \] ." <<< $TASK; then
-                    TASK="$(sed "s/:g \[ \] //" <<< $TASK)"
+                TASK="$( cleanselected "$TASK" )"
+                SUFFIX="${TASK: -5}"
+
+                if [ "${TASK: -5:1}" == "." ]; then
+                    TASK="${TASK:: -5}"
+
                     NAME="$(imenu -i "$TASK")"
-                    mv "$TASK.do" "$NAME.do"
 
-                elif grep -q ":r \[x\] ." <<< $TASK; then
-                    TASK="$(sed "s/:r \[x\] //" <<< $TASK)"
-                    NAME="$(imenu -i "$TASK")"
-                    mv "$TASK.done" "$NAME.done"
+                    mv "$TASK$SUFFIX" "$NAME$SUFFIX"
                 fi
                 ;;
 
-            ":g Clear Done")
+            "Clear Done")
 
                 rm *.done
                 ;;
