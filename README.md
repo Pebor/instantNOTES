@@ -1,7 +1,9 @@
 ## instantNOTES
 
-This project needs instantMENU and "fira code nerd" font (for icons) to work.
+This project needs instantMENU and "fira code nerd" font (for unicodes) to work.
 
-At current stage it's only targeted at instantOS but it's planned to be semi-configurable.
+It's configured to be working with instantOS by default, paths can be changed at the start of the script.
 
-All notes are stored in  ~/instantos/notes
+By default
+notes are stored in: ~/instantos/notes
+editor path is: ~/.config/instantos/default/editor
