@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# TODO take notes from configurable path
-if ! [ -d ~/instantos/notes ]; then
-    mkdir ~/instantos/notes
+#----------------------------------------------------
+NOTES=~/instantos/notes
+EDITOR=~/.config/instantos/default/editor
+#----------------------------------------------------
+
+if ! [ -d $NOTES ]; then
+    mkdir $NOTES
 fi
-cd ~/instantos/notes
+cd $NOTES
 
 maketodo() {
     for TASK in $(ls -N); do
@@ -56,8 +60,8 @@ reversesuffix() {
 
 while [ "$TASK" != "Ok" ]; do
 
-    TASK="$( maketodo ":g Options\n:r Ok\n" \
-    | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+    TASK="$( maketodo ":y Options\n:b Ok\n" \
+    | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -ps 1 )"
 
     TASK="$( cleanselected "$TASK" )"
     SUFFIX="${TASK: -5}"
@@ -101,9 +105,8 @@ while [ "$TASK" != "Ok" ]; do
                 
                 TASK="$( cleanselected "$TASK" )"
 
-                #TODO take editor from configurable path
                 if [ "${TASK: -5:1}" == "." ]; then
-                    exec ~/.config/instantos/default/editor $(pwd)/"$TASK"
+                    exec $EDITOR $(pwd)/"$TASK"
                 fi
                 ;;
 
