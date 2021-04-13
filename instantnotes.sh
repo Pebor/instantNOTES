@@ -61,7 +61,7 @@ reversesuffix() {
 while [ "$TASK" != "Ok" ]; do
 
     TASK="$( maketodo ":y Options\n:b Ok\n" \
-    | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -ps 1 )"
+    | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
     
     EXIT=false
     if [ "$TASK" == "" ]; then
