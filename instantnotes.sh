@@ -126,7 +126,7 @@ while [ "$TASK" != "Ok" ]; do
                 if [ "${TASK: -5:1}" == "." ]; then
                     TASK="${TASK:: -5}"
 
-                    NAME="$(imenu -i "$TASK")"
+                    NAME="$(imenu -i "Rename" -it "$TASK" )"
 
                     if [ "$NAME" != "" ]; then
                         mv "$TASK$SUFFIX" "$NAME$SUFFIX"
