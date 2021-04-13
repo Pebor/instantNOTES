@@ -62,6 +62,11 @@ while [ "$TASK" != "Ok" ]; do
 
     TASK="$( maketodo ":y Options\n:b Ok\n" \
     | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -ps 1 )"
+    
+    EXIT=false
+    if [ "$TASK" == "" ]; then
+        EXIT=true
+    fi
 
     TASK="$( cleanselected "$TASK" )"
     SUFFIX="${TASK: -5}"
@@ -134,6 +139,10 @@ while [ "$TASK" != "Ok" ]; do
 
         esac
 
+    fi
+
+    if $EXIT; then
+        exit
     fi
 
 done
