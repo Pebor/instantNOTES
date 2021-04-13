@@ -128,7 +128,9 @@ while [ "$TASK" != "Ok" ]; do
 
                     NAME="$(imenu -i "$TASK")"
 
-                    mv "$TASK$SUFFIX" "$NAME$SUFFIX"
+                    if [ "$NAME" != "" ]; then
+                        mv "$TASK$SUFFIX" "$NAME$SUFFIX"
+                    fi
                 fi
                 ;;
 
