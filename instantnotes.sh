@@ -61,7 +61,7 @@ reversesuffix() {
 while [ "$TASK" != "Ok" ]; do
 
     TASK="$( maketodo ":y Options\n:b Ok\n" \
-    | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+    | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
     
     EXIT=false
     if [ "$TASK" == "" ]; then
@@ -80,7 +80,7 @@ while [ "$TASK" != "Ok" ]; do
     if [ "$TASK" == "Options" ]; then
 
         TASK="$( echo -e ":g Add\n:r Remove\n:b Open\n:y Rename\n:g Clear Done\n:r Back" \
-        | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+        | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
 
         TASK="$( cleanselected "$TASK" )"
 
@@ -94,7 +94,7 @@ while [ "$TASK" != "Ok" ]; do
             "Remove")
 
                 TASK="$( maketodo ":r Back\n" \
-                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
 
                 TASK="$( cleanselected "$TASK" )"
                 
@@ -106,7 +106,7 @@ while [ "$TASK" != "Ok" ]; do
             "Open")
 
                 TASK="$( maketodo ":r Back\n" \
-                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
                 
                 TASK="$( cleanselected "$TASK" )"
 
@@ -118,7 +118,7 @@ while [ "$TASK" != "Ok" ]; do
             "Rename")
 
                 TASK="$( maketodo ":r Back\n" \
-                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' )"
+                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
 
                 TASK="$( cleanselected "$TASK" )"
                 SUFFIX="${TASK: -5}"
