@@ -31,11 +31,11 @@ maketodo() {
 cleanselected() {
     TEMP=$1
 
-    if grep -q "^:g \[ \]" <<< $TASK; then
+    if grep -q "^:g" <<< $TASK; then
         TEMP="${TEMP:7}"
         echo -e "$TEMP.note"
 
-    elif grep -q "^:r \[X\]" <<< $TASK; then
+    elif grep -q "^:r" <<< $TASK; then
         TEMP="${TEMP:7}"
         echo -e "$TEMP.done"
 
@@ -83,9 +83,7 @@ while [ "$TASK" != "Ok" ]; do
             "Add")
 
                 NAME="$(imenu -i 'Note')"
-                if ! touch "$NAME.note"; then
-                    notify-send "Please follow file naming rules when creating notes"
-                fi
+                touch "$NAME.note"
                 ;;
 
             "Remove")
