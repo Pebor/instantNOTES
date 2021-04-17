@@ -28,13 +28,7 @@ maketodo() {
 
     done
 
-    if [ "$FOLDERS" == "" ] && [ "$DO" == "" ] && [ "$DONE" == "" ]; then
-        OUT=$1
-    else
-        OUT=$1">\n"
-    fi
-
-    OUT=$OUT$FOLDERS$DO$DONE
+    OUT=$1$OUT$FOLDERS$DO$DONE
     if [ $# -gt 1 ] && [ $2 -eq 0 ]; then
         OUT=$OUT$DO$DONE
     fi
