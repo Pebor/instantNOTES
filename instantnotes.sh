@@ -5,9 +5,7 @@ NOTES=~/instantos/notes
 EDITOR=~/.config/instantos/default/editor
 #----------------------------------------------------
 
-if ! [ -d $NOTES ]; then
-    mkdir $NOTES
-fi
+[ -d $NOTES ] || mkdir $NOTES
 cd $NOTES
 
 maketodo() {
