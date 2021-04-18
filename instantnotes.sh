@@ -26,9 +26,9 @@ maketodo() {
 
     done
 
-    OUT=$1$OUT$FOLDERS$DO$DONE
+    OUT=$1$FOLDERS$DO$DONE
     if [ $# -gt 1 ] && [ $2 -eq 0 ]; then
-        OUT=$OUT$DO$DONE
+        OUT=$1$DO$DONE
     fi
     echo -e "${OUT::-2}"
 }
