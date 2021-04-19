@@ -25,11 +25,33 @@ maketodo() {
         fi
 
     done
+    
+    START_FILL=$(ls | wc -l)
+    START_FILL=$((START_FILL-$3))
+    END_FILL=0
 
-    OUT=$1$FOLDERS$DO$DONE
     if [ $# -gt 1 ] && [ $2 -eq 0 ]; then
-        OUT=$1$DO$DONE
+        OUT=$DO$DONE
+        START_FILL=$((START_FILL-$(ls -d */ | wc -l)))
+    else
+        OUT=$FOLDERS$DO$DONE
     fi
+
+    if [ $START_FILL -lt 0 ]; then
+        END_FILL=$(echo ${START_FILL#-})
+        START_FILL=0
+    fi
+    
+    for (( c=0; c < $START_FILL; c++ )); do
+        TEMP=$TEMP">\n"
+    done
+
+    OUT=$1$TEMP$OUT
+
+    for (( c = 0; c != $END_FILL; c++ )); do
+        OUT=$OUT">\n"
+    done
+
     echo -e "${OUT::-2}"
 }
 
@@ -66,11 +88,11 @@ SUBDIR=false
 while [ "$TASK" != "Ok" ]; do
     
     if ! $SUBDIR; then
-        TASK="$( maketodo ":y Options\n:b Ok\n" \
-        | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
+        TASK="$( maketodo ":y Options\n:b Ok\n" 1 2 \
+        | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i -g 2 )"
     else
-        TASK="$( maketodo ":y Options\n:r Back\n:b Ok\n" \
-        | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
+        TASK="$( maketodo ":y Options\n:r Back\n:b Ok\n" 1 3 \
+        | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i -g 2 )"
     fi
 
     if [ "$TASK" == "" ]; then
@@ -129,8 +151,8 @@ while [ "$TASK" != "Ok" ]; do
 
             "Remove")
 
-                TASK="$( maketodo ":r Back\n" \
-                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
+                TASK="$( maketodo ":r Back\n" 1 1 \
+                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i -g 2 )"
 
                 TASK="$( cleanselected "$TASK" )"
                 
@@ -144,8 +166,8 @@ while [ "$TASK" != "Ok" ]; do
 
             "Open")
 
-                TASK="$( maketodo ":r Back\n" 0\
-                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
+                TASK="$( maketodo ":r Back\n" 0 1\
+                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i -g 2 )"
                 
                 TASK="$( cleanselected "$TASK" )"
 
@@ -156,8 +178,8 @@ while [ "$TASK" != "Ok" ]; do
 
             "Rename")
 
-                TASK="$( maketodo ":r Back\n" \
-                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
+                TASK="$( maketodo ":r Back\n" 1 1 \
+                | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i -g 2 )"
 
                 TASK="$( cleanselected "$TASK" )"
                 SUFFIX="${TASK: -5}"
