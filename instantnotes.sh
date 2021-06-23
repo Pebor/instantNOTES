@@ -135,15 +135,19 @@ while [ "$TASK" != "Ok" ]; do
                 case "$TASK" in
                     "Note")
                         NAME="$( imenu -i 'Note' )"
-                        if ! touch "$NAME.note"; then
+                        if [ -z "$NAME" ] || [ "${NAME: :1}" == "." ]; then
                             notify-send "Please follow file naming rules when creating notes"
+                        else
+                            touch "$NAME.note"
                         fi
                         ;;
                     
                     *"Folder")
                         NAME="$( imenu -i 'Folder' )"
-                        if ! mkdir "$NAME"; then
-                            notify-send "Please follow folder naming rules when creating categories"
+                        if [ -z "$NAME" ] || [ "${NAME: :1}" == "." ]; then
+                            notify-send "Please follow folder naming rules when creating folders"
+                        else
+                            mkdir "$NAME"
                         fi
                         ;;
                 esac
