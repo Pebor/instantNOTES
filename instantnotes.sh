@@ -120,7 +120,7 @@ while [ "$TASK" != "Ok" ]; do
 
     if [ "$TASK" == "Options" ]; then
 
-        TASK="$( echo -e ":g Add\n:r Remove\n:b Open\n:y Rename\n:g Clear Done\n:r Back" \
+        TASK="$( echo -e ":g Add\n:r Delete\n:b Open\n:y Rename\n:g Clear Done\n:r Back" \
         | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i )"
 
         TASK="$( cleanselected "$TASK" )"
@@ -153,7 +153,7 @@ while [ "$TASK" != "Ok" ]; do
                 esac
                 ;;
 
-            "Remove")
+            "Delete")
 
                 TASK="$( maketodo ":r Back\n" 1 1 \
                 | instantmenu -w -1 -h -1 -c -l 20 -bw 3 -q 'instantNOTES' -i -g 2 )"
